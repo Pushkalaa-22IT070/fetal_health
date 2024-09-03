@@ -1,0 +1,88 @@
+Principal Component Analysis(PCA):
+
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.decomposition import PCA
+from sklearn.svm import SVC
+from sklearn.metrics import classification_report, accuracy_score
+
+# Load the dataset from the uploaded file
+file_path = r'D:\22IT070\fetal_health.csv'
+data = pd.read_csv(file_path)
+
+# Separate features and target
+X = data.drop('fetal_health', axis=1)
+y = data['fetal_health']
+
+# Split the dataset into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+
+# Standardize the features (mean=0, variance=1)
+scaler = StandardScaler()
+X_train_scaled = scaler.fit_transform(X_train)
+X_test_scaled = scaler.transform(X_test)
+
+# Apply PCA for dimensionality reduction
+# Choose the number of components to keep (you can adjust this number)
+pca = PCA(n_components=5)
+X_train_pca = pca.fit_transform(X_train_scaled)
+X_test_pca = pca.transform(X_test_scaled)
+
+# Initialize the SVM Classifier
+svm = SVC(kernel='rbf', random_state=42)
+
+# Train the SVM model on the reduced data
+svm.fit(X_train_pca, y_train)
+
+# Make predictions
+y_pred = svm.predict(X_test_pca)
+
+# Evaluate the model
+print(f'Accuracy: {accuracy_score(y_test, y_pred)}')
+print(classification_report(y_test, y_pred))
+
+# Show the explained variance ratio of each principal component
+print("Explained variance ratio of each component:", pca.explained_variance_ratio_)
+
+Naive Bayes:
+
+from google.colab import files
+uploaded = files.upload()
+
+#Import Necessary Libraries
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.naive_bayes import GaussianNB
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
+
+#Load the Dataset into a DataFrame
+filename = next(iter(uploaded))
+df = pd.read_csv(filename)
+
+# Display the first few rows to verify the data
+print(df.head())
+
+#Preprocess the Data
+X = df.drop('fetal_health', axis=1)  # Features
+y = df['fetal_health']  # Target variable
+
+#Split the Data into Training and Testing Sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+
+# Train the Naive Bayes Model
+model = GaussianNB()
+model.fit(X_train, y_train)
+
+#  Make Predictions
+y_pred = model.predict(X_test)
+
+# Evaluate the Model
+accuracy = accuracy_score(y_test, y_pred)
+print(f'Accuracy: {accuracy:.2f}')
+
+print('Confusion Matrix:')
+print(confusion_matrix(y_test, y_pred))
+
+print('Classification Report:')
+print(classification_report(y_test, y_pred))
